@@ -34,6 +34,7 @@ Object.assign(global, {
   BigInt: BigInt,
 });
 
+// Main App Rendering
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
