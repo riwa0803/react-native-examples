@@ -304,6 +304,8 @@ PODS:
     - glog
   - react-native-get-random-values (1.8.0):
     - React-Core
+  - react-native-notifications (4.3.3):
+    - React-Core
   - React-perflogger (0.70.6)
   - React-RCTActionSheet (0.70.6):
     - React-Core/RCTActionSheetHeaders (= 0.70.6)
@@ -425,6 +427,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-notifications (from `../node_modules/react-native-notifications`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -503,6 +506,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-notifications:
+    :path: "../node_modules/react-native-notifications"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -568,6 +573,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 60769e5a0a6d4b32294a2456077f59d0266f9a8b
   React-logger: 1623c216abaa88974afce404dc8f479406bbc3a0
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
+  react-native-notifications: 83b4fd4a127a6c918fc846cae90da60f84819e44
   React-perflogger: 8c79399b0500a30ee8152d0f9f11beae7fc36595
   React-RCTActionSheet: 7316773acabb374642b926c19aef1c115df5c466
   React-RCTAnimation: 5341e288375451297057391227f691d9b2326c3d

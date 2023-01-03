@@ -1,3 +1,4 @@
+#import "RNNotifications.h"
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 

@@ -17,6 +17,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
+import {Notifications} from 'react-native-notifications';
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
@@ -45,6 +46,50 @@ const App = () => {
   useEffect(() => {
     console.log('App Initalized: ', initialized);
   }, [initialized]);
+
+  useEffect(() => {
+    Notifications.events().registerRemoteNotificationsRegistered(
+      (event: any) => {
+        console.log('Device Token Received', event.deviceToken);
+      },
+    );
+
+    Notifications.events().registerRemoteNotificationsRegistrationFailed(
+      (event: any) => {
+        console.error(event);
+      },
+    );
+
+    Notifications.events().registerNotificationReceivedForeground(
+      (notification: any, completion: any) => {
+        console.log(
+          'Notification received in foreground',
+          notification.payload,
+        );
+        completion({alert: false, sound: false, badge: false});
+      },
+    );
+
+    Notifications.events().registerNotificationReceivedBackground(
+      (notification: any, completion: any) => {
+        console.log(
+          'Notification received in background',
+          notification.payload,
+        );
+        completion({alert: true, sound: true, badge: false});
+      },
+    );
+
+    Notifications.events().registerNotificationOpened(
+      (notification: any, completion: any) => {
+        console.log('Notification opened by device user', notification.payload);
+        completion();
+      },
+    );
+
+    Notifications.registerRemoteNotifications();
+    console.log('[DEBUG] registerRemoteNotifications - SUCCESS');
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
