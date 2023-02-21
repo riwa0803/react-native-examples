@@ -17,11 +17,13 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import useInitialization, {web3Provider} from '../hooks/useInitialization';
 import {universalProviderSession} from '../utils/UniversalProvider';
 import {ExplorerModal} from '../components/ExplorerModal';
+import {ethers} from 'ethers';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
+  const [currentBalance, setCurrenBalance] = useState<string | null>(null);
 
   // Initialize universal provider
   const initialized = useInitialization();
@@ -40,14 +42,30 @@ function App(): JSX.Element {
     }
   }, []);
 
+  const getBalance = useCallback(async () => {
+    try {
+      const signer = web3Provider.getSigner();
+      const currentAddress = await signer.getAddress();
+      web3Provider.getBalance(currentAddress).then(balance => {
+        // convert a currency unit from wei to ether
+        const balanceInEth = ethers.utils.formatEther(balance);
+        console.log(`balance: ${balanceInEth} ETH`);
+      });
+      // setCurrentAccount(currentAddress);
+    } catch (err: unknown) {
+      console.log('Error for initializing', err);
+    }
+  }, []);
+
   useEffect(() => {
     // NOTE: Logs to help developers debug
     // console.log('App Initalized: ', initialized);
     // console.log('useEffect currentWCURI', currentWCURI);
     if (universalProviderSession) {
       getAddress();
+      getBalance();
     }
-  }, [initialized, getAddress, currentAccount, modalVisible]);
+  }, [initialized, getAddress, currentAccount, modalVisible, getBalance]);
 
   const backgroundStyle = {
     flex: 1,
@@ -70,6 +88,7 @@ function App(): JSX.Element {
           <View>
             <Text style={styles.whiteText}>👉🥺👈</Text>
             <Text style={styles.whiteText}>Address: {currentAccount}</Text>
+            <Text style={styles.whiteText}>Address: {currentBalance}</Text>
           </View>
         ) : (
           <TouchableOpacity
