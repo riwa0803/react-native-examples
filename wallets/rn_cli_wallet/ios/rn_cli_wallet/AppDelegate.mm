@@ -15,6 +15,7 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <react/config/ReactNativeConfig.h>
+#import <TSBackgroundFetch/TSBackgroundFetch.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -57,8 +58,27 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
+  // Enable `react-native-notifications` monitoring
+  [RNNotifications startMonitorNotifications];
+  
+  // [REQUIRED] Register BackgroundFetch
+  + [[TSBackgroundFetch sharedInstance] didFinishLaunching];
+  
   return YES;
 }
+
+/// START - Methods to support push notification registration for `react-native-notifications`
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
+}
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
+}
+/// END
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///
@@ -83,6 +103,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+
+
 {
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
