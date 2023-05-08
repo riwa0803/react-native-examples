@@ -22,7 +22,7 @@
     "@walletconnect/push-client": "^0.6.4",
     "@walletconnect/react-native-compat": "^2.7.2",
     "@walletconnect/sign-client": "^2.7.2",
-    "@walletconnect/web3wallet": "^1.7.0",
+    "@walletconnect/web3wallet": "^1.7.1",
     "big-integer": "^1.6.51",
     "ethers": "^5.7.2",
     "react": "18.2.0",
