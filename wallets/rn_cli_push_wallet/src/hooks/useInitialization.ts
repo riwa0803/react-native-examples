@@ -6,9 +6,7 @@ export default function useInitialization() {
 
   const onInitialize = useCallback(async () => {
     try {
-      console.log('Init Web3 Wallet');
       await createWeb3Wallet();
-      console.log('Inited Web3 Wallet');
       await createPushClient();
 
       setInitialized(true);

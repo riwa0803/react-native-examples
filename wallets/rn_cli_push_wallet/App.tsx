@@ -19,12 +19,10 @@ import useWalletConnectEventsManager from './src/hooks/useWalletConnectEventsMan
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
-const BigInt = require('big-integer');
 
 Object.assign(global, {
   TextEncoder: TextEncodingPolyfill.TextEncoder,
   TextDecoder: TextEncodingPolyfill.TextDecoder,
-  BigInt: BigInt,
 });
 
 const Stack = createNativeStackNavigator();

@@ -39,7 +39,6 @@ export function PairModal({
   const chains = proposal?.params?.requiredNamespaces.eip155.chains;
   const icon = proposal?.params.proposer.metadata.icons[0];
 
-  console.log('THIS IS THE PAIR MODAL');
   return (
     <Modal
       isVisible={visible}

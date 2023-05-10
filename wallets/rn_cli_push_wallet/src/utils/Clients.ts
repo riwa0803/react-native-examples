@@ -13,7 +13,7 @@ const core = new Core({
 });
 
 export async function createWeb3Wallet() {
-  console.log('getting addresses');
+  console.log('getting addresses..');
   const {eip155Addresses} = await createOrRestoreEIP155Wallet();
   currentETHAddress = eip155Addresses[0];
   console.log('got addresses', currentETHAddress);

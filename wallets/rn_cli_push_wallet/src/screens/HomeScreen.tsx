@@ -27,9 +27,10 @@ import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
-import useInitialization from '../hooks/useInitialization';
 import {useSnapshot} from 'valtio';
 import ModalStore from '../store/ModalStore';
+import {PushModal} from '../components/Modals/PushRequestModal';
+import {PushClientTypes} from '@walletconnect/push-client';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -52,6 +53,7 @@ const HomeScreen = () => {
   // Modal Visible State
   const [approvalModal, setApprovalModal] = useState(false);
   const [signModal, setSignModal] = useState(false);
+  const [pushModal, setPushModal] = useState(false);
   const [signTypedDataModal, setSignTypedDataModal] = useState(false);
   const [sendTransactionModal, setSendTransactionModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
@@ -62,6 +64,8 @@ const HomeScreen = () => {
   const [WCURI, setWCUri] = useState<string>();
   const [requestEventData, setRequestEventData] = useState();
   const [requestSession, setRequestSession] = useState();
+  const [pushRequest, setPushRequest] =
+    useState<PushClientTypes.EventArguments['push_request']>();
 
   // To Revist on Dark Mode Sprint
   const backgroundStyle = {
@@ -71,7 +75,7 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    console.log(pushClient.getActiveSubscriptions());
+    console.log('ACTIVE SUBS', pushClient.getActiveSubscriptions());
   }, []);
 
   async function handleAccept() {
@@ -124,53 +128,69 @@ const HomeScreen = () => {
 
   // ToDo / Consider: How best to move onSessionProposal() + onSessionRequest() + the if statement Listeners.
   // Know there is an events config we did in web-examples app
-  // const onSessionProposal = (
-  //   proposal: SignClientTypes.EventArguments['session_proposal'],
-  // ) => {
-  //   console.log('onSessionProposal', proposal);
-  //   if (proposal) {
-  //     setPairedProposal(proposal);
-  //   }
-  // };
+  const onSessionProposal = (
+    proposal: SignClientTypes.EventArguments['session_proposal'],
+  ) => {
+    console.log('onSessionProposal', proposal);
+    if (proposal) {
+      setPairedProposal(proposal);
+    }
+  };
 
-  // const onSessionRequest = async (
-  //   requestEvent: SignClientTypes.EventArguments['session_request'],
-  // ) => {
-  //   console.log('onSessionRequest', requestEvent);
-  //   const {topic, params} = requestEvent;
-  //   const {request} = params;
-  //   const requestSessionData = web3wallet.engine.signClient.session.get(topic);
+  const onSessionRequest = async (
+    requestEvent: SignClientTypes.EventArguments['session_request'],
+  ) => {
+    console.log('onSessionRequest', requestEvent);
+    const {topic, params} = requestEvent;
+    const {request} = params;
+    const requestSessionData = web3wallet.engine.signClient.session.get(topic);
 
-  //   switch (request.method) {
-  //     case EIP155_SIGNING_METHODS.ETH_SIGN:
-  //     case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-  //       setRequestSession(requestSessionData);
-  //       setRequestEventData(requestEvent);
-  //       setSignModal(true);
-  //       return;
+    switch (request.method) {
+      case EIP155_SIGNING_METHODS.ETH_SIGN:
+      case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+        setRequestSession(requestSessionData);
+        setRequestEventData(requestEvent);
+        setSignModal(true);
+        return;
 
-  //     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-  //     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-  //     case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-  //       setRequestSession(requestSessionData);
-  //       setRequestEventData(requestEvent);
-  //       setSignTypedDataModal(true);
-  //       return;
-  //     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-  //     case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-  //       setRequestSession(requestSessionData);
-  //       setRequestEventData(requestEvent);
-  //       setSendTransactionModal(true);
-  //       return;
-  //   }
-  // };
+      case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
+      case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
+      case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
+        setRequestSession(requestSessionData);
+        setRequestEventData(requestEvent);
+        setSignTypedDataModal(true);
+        return;
+      case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+      case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+        setRequestSession(requestSessionData);
+        setRequestEventData(requestEvent);
+        setSendTransactionModal(true);
+        return;
+    }
+  };
 
-  // useEffect(() => {
-  //   if (web3wallet) {
-  //     web3wallet.on('session_proposal', onSessionProposal);
-  //     web3wallet.on('session_request', onSessionRequest);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (web3wallet) {
+      web3wallet.on('session_proposal', onSessionProposal);
+      web3wallet.on('session_request', onSessionRequest);
+    }
+  }, []);
+  useEffect(() => {
+    if (pushClient) {
+      pushClient.on('push_request', async ({id, topic, params}) => {
+        setPushModal(true);
+        console.log('push_request', {id, topic, params});
+        setPushRequest({id, topic, params});
+        // ModalStore.open('PushRequest', {
+        //   pushRequest: {
+        //     id,
+        //     topic,
+        //     params,
+        //   },
+        // });
+      });
+    }
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -179,14 +199,12 @@ const HomeScreen = () => {
         backgroundColor={backgroundStyle.backgroundColor}
       />
 
-      {view === 'SessionProposalModal' && open && (
-        <PairModal
-          proposal={data?.proposal}
-          open={setApprovalModal}
-          visible={approvalModal}
-          handleAccept={handleAccept}
-        />
-      )}
+      <PairModal
+        proposal={pairedProposal}
+        open={setApprovalModal}
+        visible={approvalModal}
+        handleAccept={handleAccept}
+      />
 
       <CopyWCURIModal
         pair={pair}
@@ -205,6 +223,13 @@ const HomeScreen = () => {
           setVisible={setSignModal}
           requestEvent={requestEventData}
           requestSession={requestSession}
+        />
+      )}
+      {pushRequest && pushModal && (
+        <PushModal
+          visible={pushModal}
+          setVisible={setPushModal}
+          pushRequest={pushRequest}
         />
       )}
 

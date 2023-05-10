@@ -6,7 +6,9 @@ import {web3wallet} from '../../utils/Clients';
 const TickImage = require('../../assets/Tick.png');
 
 const Sessions = () => {
-  const sessions = Object.values(web3wallet.getActiveSessions());
+  const sessions = web3wallet
+    ? Object.values(web3wallet.getActiveSessions())
+    : [];
 
   // @notice: Empty State with no Session
   if (!sessions || sessions.length === 0) {
