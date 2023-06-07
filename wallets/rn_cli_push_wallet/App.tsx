@@ -5,8 +5,11 @@
 //  * @format
 //  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import '@walletconnect/react-native-compat';
+import {decode, encode} from '@stablelib/hex';
+import {randomBytes} from '@stablelib/random';
+import {generateKeyPairFromSeed, sign} from './src/lib/ed25519';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -14,11 +17,16 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/Settings';
+import Crypto from 'react-native-quick-crypto';
 import useInitialization from './src/hooks/useInitialization';
 import useWalletConnectEventsManager from './src/hooks/useWalletConnectEventsManager';
-
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
+// @ts-ignore
+if (!globalThis.crypto) {
+  // @ts-ignore
+  globalThis.crypto = Crypto;
+}
 
 Object.assign(global, {
   TextEncoder: TextEncodingPolyfill.TextEncoder,
@@ -30,6 +38,26 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   const initialized = useInitialization();
   useWalletConnectEventsManager(initialized);
+
+  useEffect(() => {
+    async function test() {
+      try {
+        const randomSeed = randomBytes(32);
+        const {publicKey, secretKey: privateKey} =
+          generateKeyPairFromSeed(randomSeed);
+        const privKeyHex = encode(privateKey.subarray(0, 32), true);
+
+        const signature = sign(
+          decode(privKeyHex),
+          new TextEncoder().encode(encode(publicKey)),
+        );
+        console.log(signature);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    test();
+  }, []);
 
   return (
     <NavigationContainer>

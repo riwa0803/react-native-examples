@@ -1,4 +1,5 @@
 import React, {useCallback} from 'react';
+import '@walletconnect/react-native-compat';
 import {View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 
@@ -8,11 +9,10 @@ import {ModalHeader} from '../Modal/ModalHeader';
 
 import {pushClient} from '../../utils/Clients';
 import {PushClientTypes} from '@walletconnect/push-client';
-import {
-  createOrRestoreEIP155Wallet,
-  eip155Wallets,
-} from '../../utils/EIP155Wallet';
+import {eip155Wallets} from '../../utils/EIP155Wallet';
 import {Text} from 'react-native-svg';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '../../store/SettingsStore';
 
 interface PushModalProps {
   visible: boolean;
@@ -21,22 +21,23 @@ interface PushModalProps {
 }
 
 export function PushModal({visible, setVisible, pushRequest}: PushModalProps) {
+  const {eip155Address} = useSnapshot(SettingsStore.state);
   const {params, id} = pushRequest;
   console.log({params});
   console.log('THIS IS THE PUSH REQUEST MODAL');
 
   const onSign = useCallback(
     async (message: string) => {
-      console.log({message});
-      const {eip155Addresses} = await createOrRestoreEIP155Wallet();
+      console.log({message, eip155Address});
       const wallet =
         eip155Wallets[
-          getWalletAddressFromParams(eip155Addresses, params.account)
+          getWalletAddressFromParams([eip155Address], params.account)
         ];
       const signature = await wallet.signMessage(message);
+      console.log({signature});
       return signature;
     },
-    [params.account],
+    [params.account, eip155Address],
   );
 
   const onApprove = useCallback(async () => {
@@ -45,7 +46,7 @@ export function PushModal({visible, setVisible, pushRequest}: PushModalProps) {
         await pushClient.approve({id, onSign});
         console.log('APPROVED PUSH REQUEST');
       } catch (error) {
-        console.log(error);
+        console.log('failed to approve', error);
       } finally {
         setVisible(false);
       }

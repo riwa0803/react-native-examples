@@ -1,6 +1,7 @@
 import {Core} from '@walletconnect/core';
 import {WalletClient} from '@walletconnect/push-client';
 import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
+import SettingsStore from '../store/SettingsStore';
 import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 
 export let web3wallet: IWeb3Wallet;
@@ -10,6 +11,7 @@ export let currentETHAddress: string;
 const core = new Core({
   projectId: process.env.ENV_PROJECT_ID,
   relayUrl: process.env.ENV_RELAY_URL ?? 'wss://relay.walletconnect.com',
+  logger: 'debug',
 });
 
 export async function createWeb3Wallet() {
@@ -17,6 +19,7 @@ export async function createWeb3Wallet() {
   const {eip155Addresses} = await createOrRestoreEIP155Wallet();
   currentETHAddress = eip155Addresses[0];
   console.log('got addresses', currentETHAddress);
+  SettingsStore.setEIP155Address(currentETHAddress);
 
   web3wallet = await Web3Wallet.init({
     core,
@@ -38,6 +41,6 @@ export async function createPushClient() {
     core,
     projectId: process.env.ENV_PROJECT_ID,
     relayUrl: process.env.ENV_RELAY_URL,
-    logger: 'debug',
+    logger: 'trace',
   });
 }
