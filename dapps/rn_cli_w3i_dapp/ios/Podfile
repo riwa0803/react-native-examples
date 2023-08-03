@@ -43,11 +43,6 @@ target 'rn_cli_w3i_dapp' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'rn_cli_w3i_walletTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   post_install do |installer|
     react_native_post_install(
       installer,
