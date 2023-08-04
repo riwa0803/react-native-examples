@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android --appId com.walletconnect.w3i.rnexample",
+    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

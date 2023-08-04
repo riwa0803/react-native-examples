@@ -1,5 +1,11 @@
 import React, {useCallback, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import '@walletconnect/react-native-compat';
 import {Web3Inbox} from '@walletconnect/web3inbox-webview';
 // @ts-expect-error - env is a virtualised module via Babel config.
@@ -35,12 +41,18 @@ export default function Native() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Web3Inbox React Native Webview</Text>
-      <Pressable onPress={() => open()}>
-        <Text>Connect</Text>
-      </Pressable>
-      <Pressable onPress={toggleWeb3InboxModal}>
-        <Text>Open Web3Inbox</Text>
-      </Pressable>
+      <TouchableOpacity
+        onPress={() => open()}
+        style={[styles.button, isConnected && styles.disabled]}
+        disabled={isConnected}>
+        <Text style={styles.text}>{isConnected ? 'Connected' : 'Connect'}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={toggleWeb3InboxModal}
+        style={[styles.button, !isConnected && styles.disabled]}
+        disabled={!isConnected}>
+        <Text style={styles.text}>Open Web3Inbox</Text>
+      </TouchableOpacity>
       <WalletConnectModal
         projectId={projectId}
         providerMetadata={providerMetadata}
@@ -78,5 +90,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     fontSize: 36,
+  },
+  button: {
+    height: 50,
+    width: 200,
+    backgroundColor: '#47A1FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    marginBottom: 10,
+  },
+  disabled: {
+    backgroundColor: '#A8B0B0',
+  },
+  text: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
