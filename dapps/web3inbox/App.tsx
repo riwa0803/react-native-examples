@@ -1,11 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import '@walletconnect/react-native-compat';
 import {Web3Inbox} from '@walletconnect/web3inbox-webview';
 // @ts-expect-error - env is a virtualised module via Babel config.
