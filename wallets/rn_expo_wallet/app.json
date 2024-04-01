@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "rn-expo-wallet",
     "name": "rn_expo_wallet",
     "slug": "rn_expo_wallet",
     "version": "1.0.0",
@@ -18,16 +19,35 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rikrok.rnExpoWallet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "rn-expo-wallet"
+          },
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
+      "package": "com.rikrok.rn_expo_wallet"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "adbf42b8-d947-4c4f-88ee-220fd3b341f4"
+      }
     }
   }
 }
